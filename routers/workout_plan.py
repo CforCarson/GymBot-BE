@@ -56,10 +56,22 @@ async def generate_workout_plan(
 async def adjust_workout_plan(
     request: Request,
     name: str = Form(...),
-    daily_diet: str = Form(...),
-    daily_sleep: str = Form(...)
+    daily_diet: str = Form(None),
+    daily_sleep: str = Form(None),
+    injuries: str = Form(None),
+    stress_level: str = Form(None),
+    # Add more fields here as needed
 ):
-    adjusted_plan = adjust_workout_plan_with_ai(name, daily_diet, daily_sleep)
+    adjustment_data = {
+        "daily_diet": daily_diet,
+        "daily_sleep": daily_sleep,
+        "injuries": injuries,
+        "stress_level": stress_level,
+        # etc.
+    }
+
+    # Now pass all of that to the logic function
+    adjusted_plan = adjust_workout_plan_with_ai(name, adjustment_data)
 
     return JSONResponse(
         content={

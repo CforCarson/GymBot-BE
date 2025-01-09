@@ -102,20 +102,60 @@ def generate_default_plan() -> Dict[str, List[str]]:
         'Sunday': ['Rest day', 'Light stretching']
     }
 
-def adjust_workout_plan_with_ai(name, daily_diet, daily_sleep):
+def adjust_workout_plan_with_ai(name, adjustment_data):
     """
-    Adjust the existing workout plan based on the given diet and sleep data.
-    For demonstration, this is a mock. Replace with your AI logic.
+    Adjust the existing workout plan based on the user's dynamic inputs
+    (e.g., daily_diet, daily_sleep, injuries, stress_level, etc.).
     """
-    return {
-        "Monday": [
-            f"Adjusted training based on daily_diet={daily_diet}, daily_sleep={daily_sleep}"
-        ],
-        "Tuesday": [
-            "Keep the same or add some adjustments..."
-        ],
-        "Wednesday": [
-            "..."
-        ],
-        # ...
-    }
+
+    # 1) Build an AI prompt referencing the new data
+    #    This example does not pass the old plan. Instead, it re-creates
+    #    instructions for a brand-new plan that includes user data + adjustments.
+    #    In reality, consider passing an "existing_plan" so the AI can refine it.
+    prompt = f"""
+    The user has some additional data for adjusting their workout plan:
+    {adjustment_data}
+
+    Please create a detailed weekly workout plan in JSON format (days of week
+    as keys, arrays of exercises/objects as values) that incorporates these adjustments.
+    Use the same structure you normally return for a plan.
+    """
+
+    try:
+        # 2) Make the OpenAI call
+        #    We'll assume you already have a configured 'client' from openai import OpenAI
+        #    or you can import openai directly as in your "generate_workout_plan_with_ai" function.
+        completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a professional fitness trainer. Adjust an existing "
+                        "workout plan based on new user input. Return valid JSON with "
+                        "days of the week as keys and exercise details as values."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        )
+
+        # 3) Parse the AI response
+        response_content = completion.choices[0].message.content.strip()
+        try:
+            adjusted_plan = json.loads(response_content)
+        except json.JSONDecodeError:
+            # Attempt to extract JSON from the response if AI doesn't return clean JSON
+            adjusted_plan = extract_json_from_response(response_content)
+            if adjusted_plan is None:
+                # fallback if AI response is not valid JSON
+                return generate_default_plan()
+
+        return adjusted_plan
+
+    except Exception as e:
+        print(f"Error adjusting workout plan: {str(e)}")
+        return generate_default_plan()
