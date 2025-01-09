@@ -24,6 +24,9 @@ from langchain.memory import ConversationBufferMemory
 # Import the workout plan logic
 from workout_plan_logic import generate_workout_plan_with_ai
 
+# Make sure to import your router:
+from routers.workout_plan import router as workout_plan_router
+
 # -----------------------------------------------------------------------------
 # API Configuration
 # -----------------------------------------------------------------------------
@@ -55,6 +58,9 @@ app.add_middleware(
 # Mount static files and templates if necessary
 # app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+# Include the router so that /adjust_workout_plan is registered:
+app.include_router(workout_plan_router)
 
 # -----------------------------------------------------------------------------
 # Setup LangChain components for PDF Chatbot

@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
-from workout_plan_logic import generate_workout_plan_with_ai
+from workout_plan_logic import generate_workout_plan_with_ai, adjust_workout_plan_with_ai
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -48,6 +48,22 @@ async def generate_workout_plan(
     return JSONResponse(
         content={
             "plan": workout_plan,
+            "name": name
+        }
+    )
+
+@router.post("/adjust_workout_plan")
+async def adjust_workout_plan(
+    request: Request,
+    name: str = Form(...),
+    daily_diet: str = Form(...),
+    daily_sleep: str = Form(...)
+):
+    adjusted_plan = adjust_workout_plan_with_ai(name, daily_diet, daily_sleep)
+
+    return JSONResponse(
+        content={
+            "adjusted_plan": adjusted_plan,
             "name": name
         }
     )

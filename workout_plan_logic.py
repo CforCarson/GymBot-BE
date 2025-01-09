@@ -101,3 +101,21 @@ def generate_default_plan() -> Dict[str, List[str]]:
         'Saturday': ['Active recovery', 'Light walking'],
         'Sunday': ['Rest day', 'Light stretching']
     }
+
+def adjust_workout_plan_with_ai(name, daily_diet, daily_sleep):
+    """
+    Adjust the existing workout plan based on the given diet and sleep data.
+    For demonstration, this is a mock. Replace with your AI logic.
+    """
+    return {
+        "Monday": [
+            f"Adjusted training based on daily_diet={daily_diet}, daily_sleep={daily_sleep}"
+        ],
+        "Tuesday": [
+            "Keep the same or add some adjustments..."
+        ],
+        "Wednesday": [
+            "..."
+        ],
+        # ...
+    }
